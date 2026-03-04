@@ -1,0 +1,76 @@
+{
+  "name": "@finishkit/mcp",
+  "version": "0.1.0",
+  "mcpName": "io.github.finishkit/mcp",
+  "description": "MCP server for FinishKit - enables AI agents (Claude, GPT, Gemini) in Cursor, Claude Desktop, Windsurf, and VS Code Copilot to scan GitHub repositories for security vulnerabilities, deployment blockers, and code quality issues",
+  "homepage": "https://finishkit.app",
+  "author": "FinishKit <support@finishkit.app>",
+  "bugs": {
+    "url": "https://github.com/finishkit/mcp/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/finishkit/mcp"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mcp-server",
+    "finishkit",
+    "security",
+    "security-scanning",
+    "vulnerability-scanner",
+    "code-review",
+    "deployment",
+    "deployment-checker",
+    "ci-cd",
+    "static-analysis",
+    "ai-tools",
+    "llm-tools",
+    "claude",
+    "cursor",
+    "windsurf",
+    "copilot",
+    "github",
+    "typescript",
+    "npm",
+    "ai-agent",
+    "vibe-coding"
+  ],
+  "license": "MIT",
+  "bin": {
+    "finishkit-mcp": "./bin/finishkit-mcp.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "bin",
+    "smithery.yaml"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs --dts --out-dir dist",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@finishkit/sdk": "^0.1.0",
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "tsup": "^8.0.0"
+  }
+}

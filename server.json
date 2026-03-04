@@ -1,0 +1,29 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.finishkit/mcp",
+  "description": "MCP server for FinishKit - scan GitHub repositories for security vulnerabilities, deployment blockers, and code quality issues",
+  "repository": {
+    "url": "https://github.com/finishkit/mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@finishkit/mcp",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "FINISHKIT_API_KEY",
+          "description": "FinishKit API key (format: fk_live_...). Get one at finishkit.app/dashboard/settings",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}

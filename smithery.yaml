@@ -1,0 +1,18 @@
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      apiKey:
+        type: string
+        description: "FinishKit API key (format: fk_live_...). Get one at https://finishkit.app/dashboard/settings?tab=developer"
+    required:
+      - apiKey
+  commandFunction: |-
+    (config) => ({
+      command: "npx",
+      args: ["-y", "@finishkit/mcp"],
+      env: {
+        FINISHKIT_API_KEY: config.apiKey
+      }
+    })
