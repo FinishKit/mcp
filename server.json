@@ -1,9 +1,9 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.finishkit/mcp",
-  "description": "MCP server for FinishKit - scan GitHub repositories for security vulnerabilities, deployment blockers, and code quality issues",
+  "name": "io.github.FinishKit/mcp",
+  "description":  "FinishKit MCP: scan GitHub repos for security vulnerabilities, deployment blockers, and quality",
   "repository": {
-    "url": "https://github.com/finishkit/mcp",
+    "url": "https://github.com/FinishKit/mcp",
     "source": "github"
   },
   "version": "0.1.0",
@@ -11,7 +11,7 @@
     {
       "registryType": "npm",
       "identifier": "@finishkit/mcp",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "transport": {
         "type": "stdio"
       },

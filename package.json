@@ -1,16 +1,16 @@
 {
   "name": "@finishkit/mcp",
-  "version": "0.1.0",
-  "mcpName": "io.github.finishkit/mcp",
+  "version": "0.1.1",
+  "mcpName": "io.github.FinishKit/mcp",
   "description": "MCP server for FinishKit - enables AI agents (Claude, GPT, Gemini) in Cursor, Claude Desktop, Windsurf, and VS Code Copilot to scan GitHub repositories for security vulnerabilities, deployment blockers, and code quality issues",
   "homepage": "https://finishkit.app",
   "author": "FinishKit <support@finishkit.app>",
   "bugs": {
-    "url": "https://github.com/finishkit/mcp/issues"
+    "url": "https://github.com/FinishKit/mcp/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/finishkit/mcp"
+    "url": "https://github.com/FinishKit/mcp"
   },
   "keywords": [
     "mcp",
