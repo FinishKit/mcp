@@ -13,6 +13,8 @@ import { getFindings, getFindingsToolDefinition } from './tools/get-findings.js'
 import { getPatches, getPatchesToolDefinition } from './tools/get-patches.js'
 import { listProjects, listProjectsToolDefinition } from './tools/list-projects.js'
 import { createProject, createProjectToolDefinition } from './tools/create-project.js'
+import { requestIntelligencePack, requestIntelligencePackToolDefinition } from './tools/request-intelligence-pack.js'
+import { syncFindings, syncFindingsToolDefinition } from './tools/sync-findings.js'
 import {
   readProjectsResource,
   readProjectResource,
@@ -29,6 +31,8 @@ const TOOL_DEFINITIONS = [
   getPatchesToolDefinition,
   listProjectsToolDefinition,
   createProjectToolDefinition,
+  requestIntelligencePackToolDefinition,
+  syncFindingsToolDefinition,
 ]
 
 export function createFinishKitServer(fk: FinishKit): Server {
@@ -109,6 +113,20 @@ export function createFinishKitServer(fk: FinishKit): Server {
           repo_owner: String(safeArgs.repo_owner ?? ''),
           repo_name: String(safeArgs.repo_name ?? ''),
         })
+
+      case 'request_intelligence_pack':
+        return requestIntelligencePack(fk, {
+          framework: String(safeArgs.framework ?? ''),
+          framework_version: safeArgs.framework_version != null ? String(safeArgs.framework_version) : undefined,
+          language: safeArgs.language as 'typescript' | 'javascript',
+          package_manager: safeArgs.package_manager as 'npm' | 'pnpm' | 'yarn' | 'bun',
+          integrations: Array.isArray(safeArgs.integrations) ? safeArgs.integrations.map(String) : undefined,
+          dependencies: safeArgs.dependencies as Record<string, string> | undefined,
+          focus: safeArgs.focus as 'full' | 'security' | 'api' | 'deploy' | 'stability' | undefined,
+        })
+
+      case 'sync_findings':
+        return syncFindings(fk, safeArgs as any)
 
       default:
         return {
