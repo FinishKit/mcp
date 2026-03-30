@@ -94,7 +94,7 @@ async function tryRecoverFromPendingSession(baseUrl: string): Promise<string | n
   }
 }
 
-export function createFinishKitServer(initialFk: FinishKit | null, baseUrl: string = 'https://finishkit.app'): Server {
+export function createFinishKitServer(initialFk: FinishKit | null, baseUrl: string = 'https://www.finishkit.app'): Server {
   let fk = initialFk
   const server = new Server(
     {

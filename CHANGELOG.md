@@ -5,10 +5,10 @@ All notable changes to `@finishkit/mcp` will be documented here.
 ## [0.3.3] - 2026-03-30
 
 ### Fixed
+- **API auth failing after login**: `finishkit.app` returns a 307 redirect to `www.finishkit.app`, which strips the Authorization header on redirect. Changed default `baseUrl` to `https://www.finishkit.app` in MCP, SDK, and CLI login.
 - **npx cache serving stale versions**: Editor registrations now use `@finishkit/mcp@latest` to force npx to fetch the latest version instead of using a stale cache.
-- **Silent credential failures**: `readCredentials()` now logs to stderr when the credentials file is not found, empty, or unreadable, with the exact path tried. Previously errors were swallowed silently.
-- **Version visibility**: Error responses and stderr output now include the MCP version number (`v0.3.3`) so you can tell which version is actually running inside your editor.
-- **Stale version guidance**: The "not connected" error message now suggests re-running `npx @finishkit/mcp setup` if login was already completed, to fix stale npx cache issues.
+- **Silent credential failures**: `readCredentials()` now logs to stderr when the credentials file is not found, empty, or unreadable, with the exact path tried.
+- **Version visibility**: Error responses and stderr output now include the MCP version number so you can tell which version is running inside your editor.
 
 ## [0.3.2] - 2026-03-30
 

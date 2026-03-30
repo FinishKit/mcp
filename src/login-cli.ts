@@ -11,7 +11,7 @@ const c = {
   dim: (s: string) => (useColor ? `\x1b[2m${s}\x1b[0m` : s),
 }
 
-const BASE_URL = process.env.FINISHKIT_BASE_URL || 'https://finishkit.app'
+const BASE_URL = process.env.FINISHKIT_BASE_URL || 'https://www.finishkit.app'
 const TIMEOUT_MS = 2 * 60 * 1000
 
 async function openBrowser(url: string): Promise<void> {

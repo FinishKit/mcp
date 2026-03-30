@@ -7,7 +7,7 @@ async function main(): Promise<void> {
   const envKey = process.env.FINISHKIT_API_KEY
   const credFile = readCredentials()
   const apiKey = envKey || credFile?.apiKey || undefined
-  const baseUrl = process.env.FINISHKIT_BASE_URL || 'https://finishkit.app'
+  const baseUrl = process.env.FINISHKIT_BASE_URL || 'https://www.finishkit.app'
 
   let fk: FinishKit | null = null
 
