@@ -147,7 +147,7 @@ function configureClaudeCode(apiKey?: string): ConfigResult {
   try {
     const envFlag = apiKey ? ` -e FINISHKIT_API_KEY=${apiKey}` : ''
     execSync(
-      `claude mcp add finishkit${envFlag} -- npx -y @finishkit/mcp`,
+      `claude mcp add finishkit${envFlag} -- npx -y @finishkit/mcp@latest`,
       { stdio: 'ignore' },
     )
     return {
@@ -160,7 +160,7 @@ function configureClaudeCode(apiKey?: string): ConfigResult {
       editor: 'Claude Code',
       success: false,
       message: 'Failed to run `claude mcp add`. You can run it manually:\n' +
-        `    claude mcp add finishkit -- npx -y @finishkit/mcp`,
+        `    claude mcp add finishkit -- npx -y @finishkit/mcp@latest`,
     }
   }
 }
@@ -232,7 +232,7 @@ function configureCodex(apiKey?: string): ConfigResult {
   try {
     const envFlag = apiKey ? ` -e FINISHKIT_API_KEY=${apiKey}` : ''
     execSync(
-      `codex mcp add finishkit${envFlag} -- npx -y @finishkit/mcp`,
+      `codex mcp add finishkit${envFlag} -- npx -y @finishkit/mcp@latest`,
       { stdio: 'ignore' },
     )
     return {

@@ -22,13 +22,24 @@ export interface Credentials {
 
 export function readCredentials(): Credentials | null {
   try {
-    if (!existsSync(CREDENTIALS_FILE)) return null
+    if (!existsSync(CREDENTIALS_FILE)) {
+      process.stderr.write(`FinishKit: credentials file not found at ${CREDENTIALS_FILE}\n`)
+      return null
+    }
     const raw = readFileSync(CREDENTIALS_FILE, 'utf-8').trim()
-    if (!raw) return null
+    if (!raw) {
+      process.stderr.write(`FinishKit: credentials file is empty at ${CREDENTIALS_FILE}\n`)
+      return null
+    }
     const parsed = JSON.parse(raw)
-    if (typeof parsed.apiKey !== 'string' || !parsed.apiKey.trim()) return null
+    if (typeof parsed.apiKey !== 'string' || !parsed.apiKey.trim()) {
+      process.stderr.write(`FinishKit: credentials file missing apiKey field\n`)
+      return null
+    }
+    process.stderr.write(`FinishKit: loaded API key from ${CREDENTIALS_FILE}\n`)
     return parsed as Credentials
-  } catch {
+  } catch (err) {
+    process.stderr.write(`FinishKit: failed to read credentials at ${CREDENTIALS_FILE}: ${err instanceof Error ? err.message : String(err)}\n`)
     return null
   }
 }

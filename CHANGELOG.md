@@ -2,11 +2,19 @@
 
 All notable changes to `@finishkit/mcp` will be documented here.
 
+## [0.3.3] - 2026-03-30
+
+### Fixed
+- **npx cache serving stale versions**: Editor registrations now use `@finishkit/mcp@latest` to force npx to fetch the latest version instead of using a stale cache.
+- **Silent credential failures**: `readCredentials()` now logs to stderr when the credentials file is not found, empty, or unreadable, with the exact path tried. Previously errors were swallowed silently.
+- **Version visibility**: Error responses and stderr output now include the MCP version number (`v0.3.3`) so you can tell which version is actually running inside your editor.
+- **Stale version guidance**: The "not connected" error message now suggests re-running `npx @finishkit/mcp setup` if login was already completed, to fix stale npx cache issues.
+
 ## [0.3.2] - 2026-03-30
 
 ### Added
 - **Zero-friction onboarding**: `finishkit_setup` now creates a browser-based activation link instead of showing JSON config walls. Users click one link, sign in, and return to their editor. No copy-paste, no manual config.
-- **`npx @finishkit/mcp login`**: Browser-based auth flow (like `gh auth login`). Opens browser, user signs in, API key flows back automatically via localhost callback.
+- **`npx @finishkit/mcp login`**: Browser-based auth flow. Opens browser, user signs in, API key flows back automatically via localhost callback.
 - **`npx @finishkit/mcp logout`**: Removes stored credentials.
 - **Credentials file** (`~/.finishkit/credentials`): Shared credentials store read on every tool call. Eliminates the need to restart your editor after authenticating.
 - **Device session polling**: MCP auto-recovers when a pending browser auth session completes. Any tool call triggers a check and picks up the new key seamlessly.

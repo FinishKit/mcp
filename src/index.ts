@@ -11,13 +11,15 @@ async function main(): Promise<void> {
 
   let fk: FinishKit | null = null
 
+  process.stderr.write(`FinishKit MCP v0.3.3 starting...\n`)
+
   if (apiKey && apiKey.trim()) {
     fk = new FinishKit({ apiKey, baseUrl })
     const source = envKey ? 'environment variable' : 'credentials file'
-    process.stderr.write(`FinishKit MCP: API key found (${source}).\n`)
+    process.stderr.write(`FinishKit MCP v0.3.3: API key found (${source}).\n`)
   } else {
     process.stderr.write(
-      'FinishKit MCP: No API key configured. Server will start in setup mode. Use the finishkit_setup tool for configuration help.\n',
+      `FinishKit MCP v0.3.3: No API key. Env FINISHKIT_API_KEY=${envKey ? 'set' : 'not set'}. Credentials file=${credFile ? 'loaded' : 'not found'}.\n`,
     )
   }
 
@@ -27,7 +29,7 @@ async function main(): Promise<void> {
   await server.connect(transport)
 
   process.stderr.write(
-    `FinishKit MCP server started. API key: ${fk ? 'configured' : 'not set'}.\n`,
+    `FinishKit MCP v0.3.3 ready. API key: ${fk ? 'configured' : 'not set'}.\n`,
   )
 }
 

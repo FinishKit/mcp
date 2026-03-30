@@ -45,10 +45,13 @@ function noApiKeyResponse(toolName: string, baseUrl: string): CallToolResult {
       {
         type: 'text',
         text: [
-          `FinishKit is not connected yet. To use "${toolName}", you need to set up FinishKit first.`,
+          `FinishKit is not connected yet (MCP v0.3.3). To use "${toolName}", set up FinishKit first.`,
           '',
           'Run the finishkit_setup tool to get a setup link, or visit:',
           `  ${baseUrl}/activate`,
+          '',
+          'If you already ran "npx @finishkit/mcp login", your editor may be running an older MCP version.',
+          'Fix: run "npx @finishkit/mcp setup" to re-register with the latest version.',
           '',
           'Free to use. No credit card needed.',
         ].join('\n'),
@@ -96,7 +99,7 @@ export function createFinishKitServer(initialFk: FinishKit | null, baseUrl: stri
   const server = new Server(
     {
       name: 'finishkit-mcp',
-      version: '0.3.2',
+      version: '0.3.3',
     },
     {
       capabilities: {

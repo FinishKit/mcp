@@ -1,6 +1,6 @@
 {
   "name": "@finishkit/mcp",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "mcpName": "io.github.FinishKit/mcp",
   "description": "MCP server for FinishKit. Production readiness scanner for AI-built apps. Enables AI agents in Claude, Cursor, Windsurf, and VS Code to check if code is ready to ship.",
   "homepage": "https://finishkit.app",
