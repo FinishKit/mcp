@@ -151,7 +151,7 @@ export async function getFindings(
 export const getFindingsToolDefinition = {
   name: 'get_findings',
   description:
-    'Retrieve detailed findings from a completed FinishKit scan. Findings include security vulnerabilities, deployment blockers, stability issues, test gaps, and UI problems. Each finding includes the affected file path, line numbers, severity, category, detailed explanation, and suggested fix. Use this after scan_repo completes to get the full list of issues, optionally filtered by category or severity.',
+    'Get the production readiness report with prioritized findings blocking launch. Filter by category (blockers, security, deploy, stability, tests, ui) or minimum severity (critical, high, medium, low).',
   inputSchema: {
     type: 'object' as const,
     properties: {

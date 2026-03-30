@@ -115,7 +115,7 @@ export async function syncFindings(
 export const syncFindingsToolDefinition = {
   name: 'sync_findings',
   description:
-    'Sync analysis findings from a local AI scan back to the FinishKit dashboard. Creates a project (if needed), a run record, and inserts findings with deduplication. Returns the dashboard URL where results can be viewed. Use this after completing local analysis with an intelligence pack.',
+    'Sync production readiness findings from a local analysis back to the FinishKit dashboard. Creates a run record and inserts findings with deduplication.',
   inputSchema: {
     type: 'object' as const,
     properties: {

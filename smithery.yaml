@@ -5,9 +5,8 @@ startCommand:
     properties:
       apiKey:
         type: string
-        description: "FinishKit API key (format: fk_live_...). Get one at https://finishkit.app/dashboard/settings?tab=developer"
-    required:
-      - apiKey
+        description: "FinishKit API key (format: fk_live_...). Optional. Server starts without it and guides you through setup. Get one at https://finishkit.app/dashboard/settings?tab=developer"
+    required: []
   commandFunction: |-
     (config) => ({
       command: "npx",

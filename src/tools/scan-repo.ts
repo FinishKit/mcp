@@ -203,7 +203,7 @@ export async function scanRepo(
 export const scanRepoToolDefinition = {
   name: 'scan_repo',
   description:
-    "Scan a GitHub repository with FinishKit to detect security vulnerabilities, deployment blockers, stability issues, test coverage gaps, and UI problems. This is the primary tool - it handles the full scan lifecycle: finds the project, triggers a new scan run, polls until completion (typically 2-8 minutes), and returns a comprehensive summary of all findings. Use this when a user wants to check if their code is production-ready, find security issues, or prepare for deployment. Returns finding counts by category and severity, plus a human-readable summary.",
+    "Check if your app is ready to ship. Triggers a production readiness scan on a GitHub repository, analyzing security, deployment, stability, tests, and UI completeness. Returns a prioritized finish plan with all findings. Use when a user asks 'is my app ready?', 'what do I need before launch?', or 'check production readiness'. Typically takes 2-8 minutes.",
   inputSchema: {
     type: 'object' as const,
     properties: {

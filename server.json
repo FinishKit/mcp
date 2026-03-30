@@ -18,8 +18,8 @@
       "environmentVariables": [
         {
           "name": "FINISHKIT_API_KEY",
-          "description": "FinishKit API key (format: fk_live_...). Get one at finishkit.app/dashboard/settings",
-          "isRequired": true,
+          "description": "FinishKit API key (format: fk_live_...). Optional. Server starts without it and guides you through setup. Get one at finishkit.app/dashboard/settings",
+          "isRequired": false,
           "isSecret": true,
           "format": "string"
         }

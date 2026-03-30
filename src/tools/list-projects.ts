@@ -93,7 +93,7 @@ export async function listProjects(fk: FinishKit): Promise<CallToolResult> {
 export const listProjectsToolDefinition = {
   name: 'list_projects',
   description:
-    'List all FinishKit projects connected to your account. Each project represents a GitHub repository that has been linked to FinishKit. Returns project IDs, repository names, last scan status, and last scan date. Use this to see which repositories are configured, find project IDs for other API calls, or check when a repository was last scanned.',
+    'List all repositories connected to FinishKit for production readiness scanning.',
   inputSchema: {
     type: 'object' as const,
     properties: {},

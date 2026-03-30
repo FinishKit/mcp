@@ -1,8 +1,8 @@
 {
   "name": "@finishkit/mcp",
-  "version": "0.2.0",
+  "version": "0.3.2",
   "mcpName": "io.github.FinishKit/mcp",
-  "description": "MCP server for FinishKit - enables AI agents (Claude, GPT, Gemini) in Cursor, Claude Desktop, Windsurf, and VS Code Copilot to scan GitHub repositories for security vulnerabilities, deployment blockers, and code quality issues",
+  "description": "MCP server for FinishKit. Production readiness scanner for AI-built apps. Enables AI agents in Claude, Cursor, Windsurf, and VS Code to check if code is ready to ship.",
   "homepage": "https://finishkit.app",
   "author": "FinishKit <support@finishkit.app>",
   "bugs": {
@@ -35,7 +35,12 @@
     "typescript",
     "npm",
     "ai-agent",
-    "vibe-coding"
+    "vibe-coding",
+    "production-ready",
+    "launch-readiness",
+    "ship-ready",
+    "finish-plan",
+    "production-readiness"
   ],
   "license": "MIT",
   "bin": {
@@ -61,12 +66,12 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format cjs --dts --out-dir dist",
+    "build": "tsup src/index.ts src/setup-cli.ts src/login-cli.ts src/logout-cli.ts --format cjs --dts --out-dir dist",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@finishkit/sdk": "^0.2.0",
+    "@finishkit/sdk": "^0.3.0",
     "@modelcontextprotocol/sdk": "^1.0.0"
   },
   "devDependencies": {

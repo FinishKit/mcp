@@ -114,7 +114,7 @@ export async function getPatches(
 export const getPatchesToolDefinition = {
   name: 'get_patches',
   description:
-    'Retrieve automatically generated code patches from a completed FinishKit scan. Patches are diff-format code changes that fix detected issues. Each patch includes the affected finding title, the unified diff, application status, and verification status. Use this to see what code changes FinishKit recommends, or to apply fixes to the codebase.',
+    'Get auto-generated code patches that fix production readiness issues. Each patch includes a unified diff you can apply directly.',
   inputSchema: {
     type: 'object' as const,
     properties: {

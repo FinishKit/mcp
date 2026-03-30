@@ -131,7 +131,7 @@ export async function getScanStatus(
 export const getScanStatusToolDefinition = {
   name: 'get_scan_status',
   description:
-    'Check the current status of an in-progress FinishKit scan. Returns the scan phase (clone, detect, analyze, patch, verify, pr, finalize), progress percentage, and estimated time remaining. Use this to poll a running scan that was triggered separately, or to check if a previously started scan has completed.',
+    'Check progress of a production readiness scan. Returns current phase and progress percentage.',
   inputSchema: {
     type: 'object' as const,
     properties: {

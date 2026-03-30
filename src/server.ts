@@ -1,11 +1,13 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import {
   CallToolRequestSchema,
+  CallToolResult,
   ListResourcesRequestSchema,
   ListToolsRequestSchema,
   ReadResourceRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js'
 import { FinishKit } from '@finishkit/sdk'
+import { readCredentials, readPendingSession, writeCredentials, deletePendingSession } from './credentials.js'
 
 import { scanRepo, scanRepoToolDefinition } from './tools/scan-repo.js'
 import { getScanStatus, getScanStatusToolDefinition } from './tools/get-status.js'
@@ -15,6 +17,7 @@ import { listProjects, listProjectsToolDefinition } from './tools/list-projects.
 import { createProject, createProjectToolDefinition } from './tools/create-project.js'
 import { requestIntelligencePack, requestIntelligencePackToolDefinition } from './tools/request-intelligence-pack.js'
 import { syncFindings, syncFindingsToolDefinition } from './tools/sync-findings.js'
+import { finishkitSetup, finishkitSetupToolDefinition } from './tools/setup.js'
 import {
   readProjectsResource,
   readProjectResource,
@@ -33,13 +36,67 @@ const TOOL_DEFINITIONS = [
   createProjectToolDefinition,
   requestIntelligencePackToolDefinition,
   syncFindingsToolDefinition,
+  finishkitSetupToolDefinition,
 ]
 
-export function createFinishKitServer(fk: FinishKit): Server {
+function noApiKeyResponse(toolName: string, baseUrl: string): CallToolResult {
+  return {
+    content: [
+      {
+        type: 'text',
+        text: [
+          `FinishKit is not connected yet. To use "${toolName}", you need to set up FinishKit first.`,
+          '',
+          'Run the finishkit_setup tool to get a setup link, or visit:',
+          `  ${baseUrl}/activate`,
+          '',
+          'Free to use. No credit card needed.',
+        ].join('\n'),
+      },
+    ],
+  }
+}
+
+async function tryRecoverFromPendingSession(baseUrl: string): Promise<string | null> {
+  // First check if credentials file was written by another process (e.g., CLI login)
+  const creds = readCredentials()
+  if (creds?.apiKey) return creds.apiKey
+
+  // Check for pending device session
+  const pending = readPendingSession()
+  if (!pending) return null
+
+  try {
+    const res = await fetch(`${baseUrl}/api/cli/device-session/${pending.code}`)
+    if (!res.ok) {
+      deletePendingSession()
+      return null
+    }
+
+    const data = await res.json() as { status: string; apiKey?: string | null }
+
+    if (data.status === 'completed' && data.apiKey) {
+      writeCredentials(data.apiKey, 'device-session')
+      deletePendingSession()
+      return data.apiKey
+    }
+
+    if (data.status === 'expired') {
+      deletePendingSession()
+    }
+
+    return null
+  } catch {
+    return null
+  }
+}
+
+export function createFinishKitServer(initialFk: FinishKit | null, baseUrl: string = 'https://finishkit.app'): Server {
+  let fk = initialFk
   const server = new Server(
     {
       name: 'finishkit-mcp',
-      version: '0.1.0',
+      version: '0.3.2',
     },
     {
       capabilities: {
@@ -65,9 +122,27 @@ export function createFinishKitServer(fk: FinishKit): Server {
     const { name, arguments: args } = request.params
     const safeArgs = (args ?? {}) as Record<string, unknown>
 
+    // Guard: tools that require an API key
+    if (name !== 'finishkit_setup' && name !== 'create_project' && !fk) {
+      // Try to recover from a pending device session or credentials file
+      const recovered = await tryRecoverFromPendingSession(baseUrl)
+      if (recovered) {
+        fk = new FinishKit({ apiKey: recovered, baseUrl })
+      } else {
+        return noApiKeyResponse(name, baseUrl)
+      }
+    }
+
+    // After the guard, fk is non-null for all tools except finishkit_setup and create_project.
+    // Use non-null assertion for tools that need the client.
+    const client = fk!
+
     switch (name) {
+      case 'finishkit_setup':
+        return finishkitSetup(fk, baseUrl)
+
       case 'scan_repo':
-        return scanRepo(fk, {
+        return scanRepo(client, {
           repo_owner: String(safeArgs.repo_owner ?? ''),
           repo_name: String(safeArgs.repo_name ?? ''),
           run_type: safeArgs.run_type as 'baseline' | 'pr' | 'manual_patch' | undefined,
@@ -75,12 +150,12 @@ export function createFinishKitServer(fk: FinishKit): Server {
         })
 
       case 'get_scan_status':
-        return getScanStatus(fk, {
+        return getScanStatus(client, {
           run_id: String(safeArgs.run_id ?? ''),
         })
 
       case 'get_findings':
-        return getFindings(fk, {
+        return getFindings(client, {
           run_id: String(safeArgs.run_id ?? ''),
           category: safeArgs.category as
             | 'blockers'
@@ -101,12 +176,12 @@ export function createFinishKitServer(fk: FinishKit): Server {
         })
 
       case 'get_patches':
-        return getPatches(fk, {
+        return getPatches(client, {
           run_id: String(safeArgs.run_id ?? ''),
         })
 
       case 'list_projects':
-        return listProjects(fk)
+        return listProjects(client)
 
       case 'create_project':
         return createProject({
@@ -115,7 +190,7 @@ export function createFinishKitServer(fk: FinishKit): Server {
         })
 
       case 'request_intelligence_pack':
-        return requestIntelligencePack(fk, {
+        return requestIntelligencePack(client, {
           framework: String(safeArgs.framework ?? ''),
           framework_version: safeArgs.framework_version != null ? String(safeArgs.framework_version) : undefined,
           language: safeArgs.language as 'typescript' | 'javascript',
@@ -126,7 +201,7 @@ export function createFinishKitServer(fk: FinishKit): Server {
         })
 
       case 'sync_findings':
-        return syncFindings(fk, safeArgs as any)
+        return syncFindings(client, safeArgs as any)
 
       default:
         return {
@@ -163,6 +238,10 @@ export function createFinishKitServer(fk: FinishKit): Server {
   // ---------------------------------------------------------------------------
   server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
     const { uri } = request.params
+
+    if (!fk) {
+      throw new Error('FinishKit is not connected. Use the finishkit_setup tool to get started.')
+    }
 
     // finishkit://projects - list all projects
     if (uri === 'finishkit://projects') {

@@ -4,26 +4,57 @@
 [![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-blue)](https://modelcontextprotocol.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-MCP server for FinishKit. Enables AI agents in Cursor, Claude Desktop, Windsurf, and VS Code Copilot to scan GitHub repositories for security vulnerabilities, deployment blockers, and code quality issues.
+MCP server for FinishKit. Production readiness scanner for AI-built apps. Enables AI agents in Claude, Cursor, Windsurf, and VS Code to check if your code is ready to ship.
 
 ## What AI Agents Can Do
 
-| Tool | Description | Primary Use Case |
-|---|---|---|
-| `scan_repo` | Trigger a full scan and wait for completion | Check if a repo is production-ready |
-| `get_scan_status` | Check progress of an in-flight scan | Poll a previously triggered scan |
-| `get_findings` | Retrieve detailed findings filtered by category or severity | Review security issues, blockers, etc. |
-| `get_patches` | Retrieve auto-generated code patches with unified diffs | Apply FinishKit's suggested fixes |
-| `list_projects` | List all connected repositories and last scan dates | Discover which repos are configured |
-| `create_project` | Get guided instructions to link a new GitHub repo | Onboard a new repository |
+| Tool | Description |
+|---|---|
+| `scan_repo` | Check if your app is ready to ship. Triggers a production readiness scan and returns a prioritized finish plan. |
+| `get_scan_status` | Check progress of a production readiness scan. Returns current phase and progress percentage. |
+| `get_findings` | Get the production readiness report with prioritized findings blocking launch. |
+| `get_patches` | Get auto-generated code patches that fix production readiness issues. |
+| `list_projects` | List all repositories connected to FinishKit for production readiness scanning. |
+| `create_project` | Get instructions to connect a new GitHub repository to FinishKit. |
+| `request_intelligence_pack` | Request a production readiness analysis pack tailored to your technology stack. |
+| `sync_findings` | Sync production readiness findings from a local analysis back to the FinishKit dashboard. |
+| `finishkit_setup` | Set up FinishKit or check connection status. Creates a browser-based setup link if not connected. |
 
 ## Quick Start
 
-Get an API key at [finishkit.app/dashboard/settings?tab=developer](https://finishkit.app/dashboard/settings?tab=developer), then configure your MCP client.
+No API key required to get started. The server starts in setup mode and guides you through connecting your account.
 
-### Claude Desktop
+### Option A: Browser login (recommended)
 
-Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
+```
+npx @finishkit/mcp login
+```
+
+Opens your browser. Sign in with GitHub or Google. Your editor picks up the key automatically. No copy-paste, no config editing, no restart.
+
+### Option B: Setup command
+
+```
+npx @finishkit/mcp setup
+```
+
+Auto-detects your editor and configures FinishKit. Or target a specific editor:
+
+```
+npx @finishkit/mcp setup --claude-code
+npx @finishkit/mcp setup --cursor
+npx @finishkit/mcp setup --windsurf
+npx @finishkit/mcp setup --codex
+npx @finishkit/mcp setup --vscode
+```
+
+Then ask your AI to scan your project. It will show a setup link if you haven't connected yet.
+
+### Option C: Manual configuration
+
+Add the following to your editor's MCP config file:
+
+**Claude Desktop** (`~/.claude/claude_desktop_config.json`), **Cursor** (`~/.cursor/mcp.json`), **Windsurf** (`~/.codeium/windsurf/mcp_config.json`), **VS Code Copilot** (`.vscode/mcp.json`):
 
 ```json
 {
@@ -32,70 +63,37 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
       "command": "npx",
       "args": ["-y", "@finishkit/mcp"],
       "env": {
-        "FINISHKIT_API_KEY": "fk_live_..."
+        "FINISHKIT_API_KEY": "fk_live_your_key_here"
       }
     }
   }
 }
 ```
 
-### Cursor
+**Claude Code**:
 
-Add to `.cursor/mcp.json` in your project root (or `~/.cursor/mcp.json` globally):
-
-```json
-{
-  "finishkit": {
-    "command": "npx",
-    "args": ["-y", "@finishkit/mcp"],
-    "env": {
-      "FINISHKIT_API_KEY": "fk_live_..."
-    }
-  }
-}
+```
+claude mcp add finishkit -- npx -y @finishkit/mcp
 ```
 
-### Windsurf
+Get an API key at [finishkit.app/activate](https://finishkit.app/activate).
 
-Edit `~/.codeium/windsurf/mcp_config.json`:
+## Works Without API Key
 
-```json
-{
-  "finishkit": {
-    "command": "npx",
-    "args": ["-y", "@finishkit/mcp"],
-    "env": {
-      "FINISHKIT_API_KEY": "fk_live_..."
-    }
-  }
-}
-```
+The server always starts, even without an API key configured. This means FinishKit tools always appear in your IDE.
 
-### VS Code Copilot Chat
+When called without a key, the `finishkit_setup` tool creates a browser-based activation link. Click the link, sign in, and your editor picks up the key on the next tool call. No restart needed.
 
-Add to `.vscode/mcp.json` in your workspace (or user settings):
+Two tools always work without a key:
 
-```json
-{
-  "servers": {
-    "finishkit": {
-      "command": "npx",
-      "args": ["-y", "@finishkit/mcp"],
-      "env": {
-        "FINISHKIT_API_KEY": "${env:FINISHKIT_API_KEY}"
-      }
-    }
-  }
-}
-```
-
-After configuring, restart your AI client and try: *"Scan myorg/my-app for security issues"*
+- `finishkit_setup`: Creates a setup link and checks connection status.
+- `create_project`: Returns instructions for connecting a repository through the FinishKit dashboard.
 
 ## Tools Reference
 
 ### `scan_repo` (Primary Tool)
 
-Scan a GitHub repository with FinishKit to detect security vulnerabilities, deployment blockers, stability issues, test coverage gaps, and UI problems. This is the primary tool - it handles the full scan lifecycle: finds the project, triggers a new scan run, polls until completion (typically 2-8 minutes), and returns a comprehensive summary of all findings.
+Check if your app is ready to ship. Triggers a production readiness scan on a GitHub repository, analyzing security, deployment, stability, tests, and UI completeness. Returns a prioritized finish plan with all findings. Typically takes 2-8 minutes.
 
 | Parameter | Type | Required | Description |
 |---|---|---|---|
@@ -110,7 +108,7 @@ Returns: Finding counts by severity and category, human-readable summary, dashbo
 
 ### `get_scan_status`
 
-Check the current status of an in-progress FinishKit scan. Returns the scan phase, progress percentage, and estimated time remaining. Use this to check a scan triggered in a previous session.
+Check progress of a production readiness scan. Returns current phase and progress percentage.
 
 | Parameter | Type | Required | Description |
 |---|---|---|---|
@@ -120,7 +118,7 @@ Check the current status of an in-progress FinishKit scan. Returns the scan phas
 
 ### `get_findings`
 
-Retrieve detailed findings from a completed scan. Each finding includes file path, line numbers, severity, category, detailed explanation, and suggested fix.
+Get the production readiness report with prioritized findings blocking launch. Filter by category (blockers, security, deploy, stability, tests, ui) or minimum severity (critical, high, medium, low).
 
 | Parameter | Type | Required | Description |
 |---|---|---|---|
@@ -133,7 +131,7 @@ Retrieve detailed findings from a completed scan. Each finding includes file pat
 
 ### `get_patches`
 
-Retrieve automatically generated code patches from a completed scan. Each patch includes the unified diff, application status, and verification status.
+Get auto-generated code patches that fix production readiness issues. Each patch includes a unified diff you can apply directly.
 
 | Parameter | Type | Required | Description |
 |---|---|---|---|
@@ -143,18 +141,58 @@ Retrieve automatically generated code patches from a completed scan. Each patch 
 
 ### `list_projects`
 
-List all FinishKit projects connected to your account, with their last scan date and repository details. No inputs required.
+List all repositories connected to FinishKit for production readiness scanning. No inputs required.
 
 ---
 
 ### `create_project`
 
-Get guided instructions for creating a new FinishKit project by linking a GitHub repository. Directs to the dashboard for GitHub App installation.
+Get instructions to connect a new GitHub repository to FinishKit for production readiness scanning. Works without an API key.
 
 | Parameter | Type | Required | Description |
 |---|---|---|---|
 | `repo_owner` | string | Yes | GitHub org or username |
 | `repo_name` | string | Yes | Repository name |
+
+---
+
+### `request_intelligence_pack`
+
+Request a production readiness analysis pack tailored to your technology stack. Returns framework-specific rules, security advisories, and analysis prompts for local scanning.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `framework` | string | Yes | Web framework (e.g., `nextjs`, `remix`, `vite`) |
+| `language` | enum | Yes | `typescript` or `javascript` |
+| `package_manager` | enum | Yes | `npm`, `pnpm`, `yarn`, or `bun` |
+| `framework_version` | string | No | Framework version (e.g., `16.0.0`) |
+| `integrations` | array | No | Detected integrations (e.g., `["supabase", "stripe"]`) |
+| `dependencies` | object | No | Package versions for CVE lookup |
+| `focus` | enum | No | `full` (default), `security`, `api`, `deploy`, `stability` |
+
+---
+
+### `sync_findings`
+
+Sync production readiness findings from a local analysis back to the FinishKit dashboard. Creates a run record and inserts findings with deduplication.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `project_name` | string | Yes | Project display name |
+| `agent_id` | enum | Yes | `claude-code`, `cursor`, `codex`, `windsurf`, `custom` |
+| `pack_id` | string | Yes | Intelligence pack ID used |
+| `pack_version` | string | Yes | Intelligence pack version used |
+| `started_at` | string | Yes | ISO timestamp when analysis started |
+| `finished_at` | string | Yes | ISO timestamp when analysis finished |
+| `detected_stack` | object | Yes | Detected stack metadata |
+| `findings` | array | Yes | Array of findings from the analysis |
+| `summary` | string | Yes | Human-readable summary |
+
+---
+
+### `finishkit_setup`
+
+Set up FinishKit or check connection status. If not connected, creates a browser-based activation link. If connected, shows available tools. Always works, even without an API key. No inputs required.
 
 ## Resources Reference
 
@@ -189,44 +227,46 @@ Then:
 get_findings({ run_id: "<from scan_repo response>", category: "security" })
 ```
 
-### Handling common errors
+### Handling common situations
 
-- "Project not found" - The repository must be connected at https://finishkit.app/dashboard first
-- "Authentication failed" - The FINISHKIT_API_KEY env var is missing or invalid
-- "Plan limit reached" - User needs to upgrade at https://finishkit.app/dashboard/settings
+- "FinishKit is not connected": Use `finishkit_setup` to get a browser activation link
+- "Project not found": The repository must be connected at https://finishkit.app/dashboard first
+- "Authentication failed": The API key is invalid. Run `npx @finishkit/mcp login` to re-authenticate
+- "Plan limit reached": User needs to upgrade at https://finishkit.app/dashboard/settings
 
 ### Key facts
 
-- `scan_repo` typically takes 2-8 minutes - it blocks until complete, no need to poll separately
+- `scan_repo` typically takes 2-8 minutes. It blocks until complete, no need to poll separately.
 - Findings have severity: critical, high, medium, low
 - Findings have category: blockers, security, deploy, stability, tests, ui
 - Critical and high findings should be fixed before production deployment
 
 ## Authentication
 
-Set the `FINISHKIT_API_KEY` environment variable with your API key:
+The simplest way to authenticate is `npx @finishkit/mcp login`, which opens your browser and stores the key locally at `~/.finishkit/credentials`.
 
-```
-FINISHKIT_API_KEY=fk_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
+The MCP resolves API keys in this order:
+1. `FINISHKIT_API_KEY` environment variable (highest priority)
+2. `~/.finishkit/credentials` file (written by `login` or `setup --api-key`)
+3. No key (setup mode with browser activation link)
 
-To get an API key:
-1. Go to [finishkit.app/dashboard/settings?tab=developer](https://finishkit.app/dashboard/settings?tab=developer)
-2. Generate a new API key
-3. Copy the key (it starts with `fk_live_`)
+To get an API key manually:
+1. Visit [finishkit.app/activate](https://finishkit.app/activate)
+2. Sign in with GitHub or Google
+3. Copy the key (starts with `fk_live_`)
 
-API keys authenticate via `Authorization: Bearer <key>` on every request. Keep your key secret - never commit it to source control.
+API keys authenticate via `Authorization: Bearer <key>` on every request. Keep your key secret and never commit it to source control.
 
 ## Requirements
 
 - Node.js 18+
-- A FinishKit account ([finishkit.app](https://finishkit.app))
-- At least one repository connected to FinishKit via the GitHub App
+- A FinishKit account ([finishkit.app](https://finishkit.app)) for scanning (optional for setup)
+- At least one repository connected to FinishKit via the GitHub App (for scanning)
 
 ## Registry Listings
 
-- [Smithery](https://smithery.ai/server/@finishkit/mcp) - Smithery MCP registry
-- [npm: @finishkit/mcp](https://www.npmjs.com/package/@finishkit/mcp) - npm package
+- [Smithery](https://smithery.ai/server/@finishkit/mcp)
+- [npm: @finishkit/mcp](https://www.npmjs.com/package/@finishkit/mcp)
 
 ## License
 

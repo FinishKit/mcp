@@ -45,7 +45,7 @@ export async function createProject(
 export const createProjectToolDefinition = {
   name: 'create_project',
   description:
-    "Create a new FinishKit project by linking a GitHub repository. Note: This requires the FinishKit GitHub App to be installed on the repository first. If the GitHub App is not installed, this tool will direct the user to https://finishkit.app/dashboard to install it and create the project through the web interface. Returns setup instructions with a direct link to the dashboard.",
+    'Get instructions to connect a new GitHub repository to FinishKit for production readiness scanning.',
   inputSchema: {
     type: 'object' as const,
     properties: {

@@ -60,7 +60,7 @@ export async function requestIntelligencePack(
 export const requestIntelligencePackToolDefinition = {
   name: 'request_intelligence_pack',
   description:
-    'Request a bespoke intelligence pack for a detected technology stack. Returns stack-specific analysis prompts, framework rules, security advisories, and community patterns. Use this before running local analysis to get tailored guidance for the specific framework and integrations.',
+    'Request a production readiness analysis pack tailored to your technology stack. Returns framework-specific rules, security advisories, and analysis prompts for local scanning.',
   inputSchema: {
     type: 'object' as const,
     properties: {
